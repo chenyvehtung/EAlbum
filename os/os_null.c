@@ -13,6 +13,10 @@
 #define KPDK_VALUE	(*((volatile unsigned char *)(0x41500008)))		//Direct Keypad
 #define KPAS_VALUE	(*((volatile unsigned char *)(0x41500020)))		//Matrix Keypad
 
+#define OIER		(*(volatile unsigned long *)(0x40a0001c))
+#define	OSCR		(*(volatile unsigned long *)(osTimer_OSCR))
+#define	OSMR0		(*(volatile unsigned long *)(0x40a00000))
+#define OSSR		(*(volatile unsigned long *)(0x40a00014))
 
 extern void disable_lcd(void);
 extern void enable_lcd(void);
@@ -31,6 +35,16 @@ const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x
 //the color of the screen
 const int SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
 
+int pretimer;
+
+
+void Delay(unsigned int x)
+{
+	unsigned int i, j, k;
+	for (i =0; i <=x; i++)
+		for (j = 0; j <0xff; j++)
+			for (k = 0; k <0xff; k++);
+}
 
 /* get the led display of a double-digit */
 unsigned long get_led_display(unsigned long num)
@@ -80,11 +94,17 @@ void lcd_display()
 /* for keyboard IRQ interrupt */
 void IRQ_Function(void)
 {	
-    unsigned short int kbd_buff;
 	char i;
 	char j;
 	i = KPDK_VALUE;					
 	j = KPAS_VALUE;		
+		
+	/*For timer*/
+	if (OSSR == 0x01)
+	{
+	    index = 0;
+	    lcd_display();
+	}
 				
     /* For LED display */
 	switch (i)
@@ -96,18 +116,12 @@ void IRQ_Function(void)
             led_display(2);         
 			break;				
 		/*case 0x04:  				//key-press 3
-			kbd_buff=0x8F30;
-			LED_CS3 = kbd_buff;	
-			LED_CS2 = 0x8F8F;
-			break;
-				
+			break;				
 		case 0x20: 					//key-press 4
-			kbd_buff=0x198F;
-			LED_CS3 = kbd_buff;	
-			LED_CS2 = 0x8F8F;	
-			break;*/					
+			break;	*/			
 		default: break;		
 	}
+	
     /* For LCD display */
 	switch (j)
 	{			
@@ -121,20 +135,20 @@ void IRQ_Function(void)
 			lcd_display();
 			break;
 					
-		case 0x02:  				//key-press 7
-			kbd_buff=0x8F78;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F;
+		case 0x02:  				//key-press 7, enable timer 0
+			OIER = 0x1;		
+    		pretimer = OSCR;
+    		OSMR0 = pretimer + 0x800000;
+			Delay(10);
 			break;
 					
 		case 0x05: 					//key-press 8
-			kbd_buff=0x008F;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F;
+		
 			break;
 				
 		default: break;		
 	}
+
 }
 
 
@@ -148,6 +162,7 @@ void dummyOs(void)
 
 	while (1)
 	{
+	    led_display(1);
         //waiting for interrupt
 	}
 	

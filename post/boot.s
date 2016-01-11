@@ -102,6 +102,15 @@ Stack
 
 
 	;***************************
+	;Power Manager Sleep Status Register
+	;***************************
+	ldr  r1, =PSSR
+	mov r2, #0x30
+	str  r2, [r1]
+	
+	
+
+	;***************************
 	;init LCD_Controller
 	;***************************
 	mov r14,pc

@@ -1,6 +1,7 @@
 	IMPORT	IRQ_Function
-	;IMPORT	ICMR
-	
+	IMPORT	ICMR
+	IMPORT	OSSR
+	IMPORT  KPC
 	
 	EXPORT	IRQ_Handler
 	
@@ -14,25 +15,33 @@
 	
 	STMFD SP!,{R4}
 	
-	;LDR R0,=ICMR
-	;LDR R1,[R0]
-	;BIC R1,R1,#0x01	;Clean the kpdk
-	;BIC R1,R1,#800		;Clean the kpmk
-	;STR R1,[R0]
-	
 	BL	IRQ_Function
+	
 	LDMFD	SP!,{R4}
 	
-	;LDR R0,=ICMR
-	;LDR R1,[R0]
-	;ORR R1,R1,#0x800
-	;ORR R1,R1,#0x01
-	;STR R1,[R0]
+	;************************
+	;clean the timer flag
+	;************************
+	LDR	R3,=OSSR
+	MOV R0,#0xf
+	STR R0,[R3]
 	
-	LDR	R0,=0x41500000
+	;*************************
+	;enable the timer interrupt
+	;**************************
+	LDR R0,=ICMR
+	MOV R1,#0x3c000000
+	STR R1,[R0]
+	
+	;*************************
+	;enable the keypad
+	;*************************
+	LDR R0,=KPC
 	LDR R1,[R0]
-
+	ORR R1,R1,#0x02
+	STR R1,[R0]
 	
+
 	MSR SPSR_cxsf, R4
 	
 	LDMFD SP!,{R0-R12,PC}^
@@ -40,3 +49,6 @@
 
 
 	END
+	
+	
+	
