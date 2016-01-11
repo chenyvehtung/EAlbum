@@ -1,4 +1,15 @@
+         
+         ;For LCD 
+         IMPORT   gpio_GPDR1
+         IMPORT	  gpio_GPDR2
+         IMPORT   gpio_GAFR1_U
+         IMPORT   gpio_GAFR2_L
 
+         IMPORT   init_GPDR1
+         IMPORT   init_GPDR2
+         IMPORT   init_GAFR1_U
+         IMPORT   init_GAFR2_L
+         
 	EXPORT	post_initGpio
 
 	AREA post_initGpio ,CODE ,READONLY

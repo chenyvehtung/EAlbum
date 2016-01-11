@@ -7,13 +7,18 @@
 	IMPORT	post_initMem
 	IMPORT	post_initKey
 	IMPORT	dummyOs
-	IMPORT  IRQ_Handler
 	
+	;For keyboard IRQ interrupt
+	IMPORT  IRQ_Handler	
 	IMPORT  ICMR
 	IMPORT  init_ICMR
-	
 	IMPORT  PSSR
 	
+	;For LCD 
+	IMPORT	post_LcdController
+	IMPORT	backlight_cs
+	IMPORT	lcdlight 
+	IMPORT	screen_clean
 	
 	AREA boot ,CODE ,READONLY
 
@@ -95,6 +100,14 @@ Stack
 	mov r14,pc
 	ldr pc,=post_initKey
 
+
+	;***************************
+	;init LCD_Controller
+	;***************************
+	mov r14,pc
+	ldr pc,=post_LcdController
+	
+
 	;**************************
 	;Loop
 	;**************************
@@ -113,6 +126,14 @@ postLoop
 	STRH	R2,	[R0,#0]	
 
 
+	;****************************
+	;Turn on backlight
+	;****************************
+	LDRH    R2,[R0,#0]		
+	ORR 	R2,R2,#0x100
+	STRH    R2,[R0,#0]
+	
+	
 	ldr pc,=dummyOs
 	END
 

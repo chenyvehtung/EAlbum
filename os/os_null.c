@@ -13,6 +13,16 @@
 #define KPDK_VALUE	(*((volatile unsigned char *)(0x41500008)))		//Direct Keypad
 #define KPAS_VALUE	(*((volatile unsigned char *)(0x41500020)))		//Matrix Keypad
 
+
+extern void disable_lcd(void);
+extern void enable_lcd(void);
+extern void lighton1(void);
+extern void lighton2(void);
+extern void lightoff1(void);
+extern void lightoff2(void);
+extern void screen_clean(int);
+
+
 //the led code of an unit 
 const unsigned long num_code[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
 
@@ -47,6 +57,8 @@ void led_display(int num)
 	    break;
     }
 }
+
+
 
 /* for keyboard IRQ interrupt */
 void IRQ_Function(void)
