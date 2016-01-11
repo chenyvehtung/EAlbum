@@ -22,18 +22,24 @@ extern void lightoff1(void);
 extern void lightoff2(void);
 extern void screen_clean(int);
 
-
+//the index of the picture
+int index = 0;
+//the total number of the picture
+int TOTAL_NUM = 3;
 //the led code of an unit 
-const unsigned long num_code[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+//the color of the screen
+const int SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
+
 
 /* get the led display of a double-digit */
 unsigned long get_led_display(unsigned long num)
 {
     int unit = num % 10;
     int decade = ((int)num / 10) % 10;
-    unsigned long answer = num_code[unit];
+    unsigned long answer = NUM_CODE[unit];
     answer <<= 8;
-    answer += num_code[decade];
+    answer += NUM_CODE[decade];
     return answer;
 }
 
@@ -58,6 +64,17 @@ void led_display(int num)
     }
 }
 
+/* show picture according to index */
+void lcd_display()
+{
+    if (index < 0)
+        index = TOTAL_NUM;
+    else if (index >= TOTAL_NUM)
+        index = 0;
+    else {
+        screen_clean(SCREEN_COLOR[index]);
+    }
+}
 
 
 /* for keyboard IRQ interrupt */
@@ -94,16 +111,14 @@ void IRQ_Function(void)
     /* For LCD display */
 	switch (j)
 	{			
-		case 0x00:					//key-press 5
-			kbd_buff=0x8F12;
-			LED_CS2 = kbd_buff;
-			LED_CS3 = 0x8F8F;
+		case 0x00:					//key-press 5, previous pic
+			index--;
+		    lcd_display();
 			break;
 					
-		case 0x01:  				//key-press 6
-			kbd_buff=0x028F;
-			LED_CS2 = kbd_buff;
-			LED_CS3 = 0x8F8F;  
+		case 0x01:  				//key-press 6, next pic
+			index++;
+			lcd_display();
 			break;
 					
 		case 0x02:  				//key-press 7
