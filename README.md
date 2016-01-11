@@ -1,2 +1,5 @@
 # EAlbum
 An Electronic Album running on PXA270
+
+SYSU 2015 EMBEDED SYSTEM FINAL PROJECT
+UNDER CONSTRUCTING...
