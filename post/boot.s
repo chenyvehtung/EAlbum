@@ -1,12 +1,19 @@
 	IMPORT	postDelay
-	;IMPORT	osStack
+	IMPORT	osStack
+
+    IMPORT	init_Stack
 
 	IMPORT	post_initGpio
 	IMPORT	post_initMem
 	IMPORT	post_initKey
 	IMPORT	dummyOs
+	IMPORT  IRQ_Handler
 	
-	IMPORT	init_Stack
+	IMPORT  ICMR
+	IMPORT  init_ICMR
+	
+	IMPORT  PSSR
+	
 	
 	AREA boot ,CODE ,READONLY
 
@@ -36,8 +43,6 @@ Prefetch_Handler
 DataAbort_Handler
 	B	DataAbort_Handler
 
-IRQ_Handler
-	B	IRQ_Handler	
 
 FIQ_Handler
 	B	FIQ_Handler			;Defined by yourself
@@ -70,6 +75,18 @@ Stack
 	;**************************	
 	mov r14,pc
 	ldr pc,=post_initGpio
+    
+    
+ 	;***************************
+	;Enable & Set Interrupt
+	;***************************
+	mrs  r1, CPSR
+	bic  r1, r1,#0x80
+	msr  CPSR_c, r1
+			
+	ldr  r1, =ICMR
+	ldr  r2, =init_ICMR
+	str  r2,[r1]         ;Enable keyboard interrupt and ban all others
     
      
     ;**************************

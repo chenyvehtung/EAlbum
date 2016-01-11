@@ -55,6 +55,11 @@
 	EXPORT	led_board
 
 	EXPORT	osStack
+	
+	;Interrupt Controller
+	EXPORT	ICMR
+	EXPORT	init_ICMR
+
 
 	AREA library_register ,DATA ,READONLY
 
@@ -116,5 +121,11 @@ Sram_Addr		EQU	0x0c500000
 ;Sram_Addr		EQU	0xa0001000
 
 osStack			EQU	0xa0200000
+
+
+;Interrupt Controller
+ICMR             EQU       0x40d00004
+init_ICMR        EQU       0x00000010
+
 
 	END

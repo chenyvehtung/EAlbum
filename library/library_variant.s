@@ -24,6 +24,7 @@
 	EXPORT	StackUnd
 	EXPORT	StackUsr	
 	
+	EXPORT  PSSR
 		
 
 	AREA library_variant ,DATA ,READONLY
@@ -57,6 +58,10 @@ StackFiq		EQU		0xa060a000
 StackAbt		EQU		0xa060e000
 StackUnd		EQU		0xa0714000
 StackUsr		EQU		0xa0720000	
+
+;clock and power Register
+PSSR             EQU       0x40f00004
+
 
 	END
 
