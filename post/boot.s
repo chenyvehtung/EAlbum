@@ -16,6 +16,13 @@
 	
 	
 
+	IMPORT	post_LcdController
+	IMPORT	backlight_cs
+	IMPORT	lcdlight 
+	IMPORT	screen_clean
+	
+	
+
 	AREA boot ,CODE ,READONLY
 
 	ENTRY
@@ -76,6 +83,7 @@ Stack
 
 	
 	
+	
 	;**************************
 	;Init Gpio
 	;**************************
@@ -103,6 +111,11 @@ Stack
 	ldr pc,=post_initKey
 
 
+	;***************************
+	;LCD_Controller
+	;***************************
+	mov r14,pc
+	ldr pc,=post_LcdController
 
 
 	;***************************
@@ -132,6 +145,15 @@ postLoop
 	STRH	R2,	[R0,#0]
 
 	
+	;****************************
+	;turn on backlight
+	;****************************
+	LDRH    R2,[R0,#0]		
+	ORR 	R2,R2,#0x100
+	STRH    R2,[R0,#0]
+
+
+
 	ldr pc,=dummyOs
 	
 	END

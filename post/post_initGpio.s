@@ -1,4 +1,15 @@
 
+         IMPORT   gpio_GPDR1
+         IMPORT	gpio_GPDR2
+         IMPORT   gpio_GAFR1_U
+         IMPORT   gpio_GAFR2_L
+
+         IMPORT   init_GPDR1
+         IMPORT   init_GPDR2
+         IMPORT   init_GAFR1_U
+         IMPORT   init_GAFR2_L
+
+
 	EXPORT	post_initGpio
 
 	AREA post_initGpio ,CODE ,READONLY
@@ -109,7 +120,7 @@
 	STR          R0,[R1,#0x10]
 
 ;GAFR2_L///////////////////////////////////////////////////
-	ldr          R0,=0xa0000000		;GPIO<79:78>:nCS<3:2>	
+	ldr          R0,=0xaaaaaaaa		;GPIO<79:78>:nCS<3:2>	
 	STR          R0,[R1,#0x64]
 
 ;GAFR2_U///////////////////////////////////////////////////////////////////////

@@ -14,6 +14,12 @@
 #define RYCR (*(volatile unsigned long *)(0x40900014))
 
 
+extern void disable_lcd(void);
+extern void enable_lcd(void);
+extern void screen_clean(int);
+
+
+
 void Delay(unsigned int x)
 {
 	unsigned int i, j, k;
@@ -24,16 +30,18 @@ void Delay(unsigned int x)
 
 
 //the led code of an unit 
-const unsigned long num_code[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+
+
 
 //get the led display of a double-digit
 unsigned long get_led_display(unsigned long num)
 {
 	int unit = num % 10;
     int decade = (num / 10) % 10;   
-    unsigned long answer = num_code[unit];
+    unsigned long answer = NUM_CODE[unit];
     answer <<= 8;
-    answer += num_code[decade];
+    answer += NUM_CODE[decade];
     return answer;
 }
 
@@ -58,6 +66,8 @@ void led_display(int num)
     }
 }
 
+
+
 void IRQ_Function(void)
 {	
 	char i;
@@ -75,13 +85,13 @@ void IRQ_Function(void)
 			break;
 					
 		case 0x02:  				//key-press 2		
-			
+			screen_clean(0x1F001F);
+			Delay(500);
 			break;
 					
 		case 0x04:  				//key-press 3
-			kbd_buff=0x8F30;
-			LED_CS3 = kbd_buff;	
-			LED_CS2 = 0x8F8F;
+			screen_clean(0xFFFFFFFF);
+			Delay(500);
 			break;
 				
 		case 0x20: 					//key-press 4
@@ -99,15 +109,15 @@ void IRQ_Function(void)
 	{
 			
 		case 0x00:					//key-press 5
-			kbd_buff=0x8F12;
-			LED_CS2 = kbd_buff;
-			LED_CS3 = 0x8F8F;
+			kbd_buff=0x8F78;
+			LED_CS3 = kbd_buff;
+			LED_CS2 = 0x8F8F;
 			break;
 					
 		case 0x01:  				//key-press 6
-			kbd_buff=0x028F;
-			LED_CS2 = kbd_buff;
-			LED_CS3 = 0x8F8F;  
+			kbd_buff=0x8F78;
+			LED_CS3 = kbd_buff;
+			LED_CS2 = 0x8F8F; 
 			break;
 					
 		case 0x02:  				//key-press 7
