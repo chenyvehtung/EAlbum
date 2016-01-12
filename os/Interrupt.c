@@ -20,6 +20,15 @@ extern void screen_clean(int);
 
 
 
+int autoplay = 0;
+//the index of the picture
+int index = 0;
+//the led code of an unit 
+const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+//the color of the screen
+const unsigned long SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
+
+
 void Delay(unsigned int x)
 {
 	unsigned int i, j, k;
@@ -27,15 +36,6 @@ void Delay(unsigned int x)
 		for (j = 0; j <0xff; j++)
 			for (k = 0; k <0xff; k++);
 }
-
-//the index of the picture
-int index = 0;
-//the total number of the picture
-int TOTAL_NUM = 3;
-//the led code of an unit 
-const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
-//the color of the screen
-const unsigned long SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
 
 
 //get the led display of a double-digit
@@ -70,13 +70,19 @@ void led_display(int num)
     }
 }
 
+
+
 /* show picture according to index */
 void lcd_display()
 {
-    if (index < 0)
-        index = TOTAL_NUM - 1;
-    if (index >= TOTAL_NUM)
+    if (index < 0) 
+    {
+        index = 2;
+    }
+    if (index >= 3)
+    {
         index = 0;
+    }
         
     screen_clean(SCREEN_COLOR[index]);
 }
@@ -92,19 +98,17 @@ void IRQ_Function(void)
 	switch (i)
 	{
 			
-		case 0x40:					//key-press 1
+		case 0x40:					//key-press 1, show date
 	        led_display(2);
 			Delay(500);
 			break;
 					
 		case 0x02:  				//key-press 2		
-			screen_clean(0x1F001F);
-			Delay(500);
+
 			break;
 					
 		case 0x04:  				//key-press 3
-			screen_clean(0xFFFFFFFF);
-			Delay(500);
+
 			break;
 				
 		case 0x20: 					//key-press 4
@@ -121,29 +125,30 @@ void IRQ_Function(void)
 	switch (j)
 	{
 			
-		case 0x00:					//key-press 5
+		case 0x00:					//key-press 5, previous page
 			index--;
 		    lcd_display();
-		    Delay(300);
+		    //Delay(300);
 			break;
 					
-		case 0x01:  				//key-press 6
+		case 0x01:  				//key-press 6, next page
 			index++;
 		    lcd_display();
-		    Delay(300);
+		    //Delay(300);
 			break;
 					
-		case 0x02:  				//key-press 7
-			kbd_buff=0x8F78;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F;
-			Delay(500);
+		case 0x02:  				//key-press 7, autoplay start and stop
+			if (autoplay == 0){
+			    autoplay = 1;
+			}
+			else {
+			    autoplay = 0;
+			}
 			break;
 					
-		case 0x05: 					//key-press 8
-			kbd_buff=0x008F;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F;
+		case 0x10: 					//key-press 8, restart
+			index = 0;
+			lcd_display();
 			break;
 				
 		default: break;
@@ -162,11 +167,18 @@ void dummyOs(void)
 	RYCR = 0xfae21;			//set the data 2007.1.1
 	LED_CS1 = LED_CS2 = LED_CS3 = 0xFFFF; //init led
 	index = 0;
+	autoplay = 0;
 
  	while(1) 
    	{
    	    led_display(1);
 			//waiting for interrupt
+		while (autoplay == 1) {
+		    lcd_display();
+		    led_display(1);
+		    Delay(500);
+		    index++;
+		}
 	}
 	
 
