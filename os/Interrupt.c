@@ -49,8 +49,8 @@ void Delay(unsigned int x)
 //get the led display of a double-digit
 unsigned long get_led_display(unsigned long num)
 {
-	int unit = num % 10;
-    int decade = (num / 10) % 10;   
+	int unit = (int)num % 10;
+    int decade = ((int)num / 10) % 10;   
     unsigned long answer = NUM_CODE[unit];
     answer <<= 8;
     answer += NUM_CODE[decade];
@@ -157,6 +157,7 @@ void IRQ_Function(void)
 			index = 0;
 			lcd_display();
 			RDCR = 0x1e0000;
+			RYCR = 0xfc02d;	
 			break;
 				
 		default: break;
@@ -171,8 +172,9 @@ void dummyOs(void)
  	
 	RTSR = 0x0;				//reset the status registers	
 	RCNR = 0x0;				//reset the clock counter
+	RYCR = 0xfc02d;			//set the data 2016.1.13
 	RDCR = 0x1e0000;        //set the time 00:00:00
-	RYCR = 0xfae21;			//set the data 2007.1.1
+	
 	LED_CS1 = LED_CS2 = LED_CS3 = 0xFFFF; //init led
 	index = 0;
 	autoplay = 0;
