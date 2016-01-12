@@ -14,17 +14,21 @@ const unsigned long BULGARIA[3] = {0xFFFFFFFF, 0x07E007E0, 0xF800F800};
 //RED, WHITE, BLACK
 const unsigned long YEMEN[3] = {0xF800F800, 0xFFFFFFFF, 0x0};
 
-/*extern void udelay(int multi);
-extern char word_1[32][4] ;
-extern char word_2[32][4] ;
-extern char word_3[32][4] ;
-extern char word_4[32][4] ;
-extern char word_5[32][4] ;
-extern char word_6[32][4] ;
-extern char word_7[32][4] ;
+/*extern void udelay(int multi);*/
 
-extern void print_3232(char *,int, int);*/
 
+extern char UPPERR[13][1];
+extern char UPPERS[13][1];
+extern char UPPERU[13][1];
+extern char UPPERI[13][1];
+extern char UPPERA[13][1];
+extern char UPPERB[13][1];
+extern char UPPERL[13][1];
+extern char UPPERG[13][1];
+extern char UPPERY[13][1];
+extern char UPPERE[13][1];
+extern char UPPERM[13][1];
+extern void print_0813(char *,int, int);
 
 void udelay(int multi)
 {
@@ -36,7 +40,7 @@ void udelay(int multi)
 
 }
 
-void lighton1(void)
+/*void lighton1(void)
 {
 	LCD_LIGHT=(~LIGHT1)|BACKLIGHT;	
 
@@ -55,7 +59,7 @@ void lightoff1(void)
 void lightoff2(void)
 {
 	LCD_LIGHT=LIGHT2|BACKLIGHT;
-}
+}*/
 
 
 /*void typename(void)
@@ -80,7 +84,7 @@ void screen_clean(long int color)
 }
 
 
-void disable_lcd(void)
+/*void disable_lcd(void)
 {
   LCD_LCCR0 = LCD_LCCR0 | 0x0400;
  
@@ -96,6 +100,40 @@ void enable_lcd(void)
 udelay(1);
   LCD_LCCR0 = LCD_LCCR0 | 0x01;
   
+}*/
+
+void print_country (int num) 
+{
+	switch (num) 
+	{
+	case 0:
+	  	print_0813(UPPERR[0],250+36,100);
+  		print_0813(UPPERU[0],262+36,100);
+  		print_0813(UPPERS[0],274+36,100);
+  		print_0813(UPPERS[0],286+36,100);
+  		print_0813(UPPERI[0],298+36,100);
+		print_0813(UPPERA[0],310+36,100);
+		break;
+	case 1:
+		print_0813(UPPERB[0],250,100);
+		print_0813(UPPERU[0],262,100);
+		print_0813(UPPERL[0],274,100);
+		print_0813(UPPERG[0],286,100);
+		print_0813(UPPERA[0],298,100);
+		print_0813(UPPERR[0],310,100);
+		print_0813(UPPERI[0],322,100);
+		print_0813(UPPERR[0],334,100);
+		break;
+	case 2:
+		print_0813(UPPERY[0],280,200);
+		print_0813(UPPERE[0],292,200);
+		print_0813(UPPERM[0],304,200);
+		print_0813(UPPERE[0],316,200);
+		print_0813(UPPERM[0],328,200);
+		break;
+	default:
+		break;	
+	}
 }
 
 
@@ -115,6 +153,7 @@ void print_flag (int num)
 				fill_color = RUSSIA[2];
   			(*(volatile unsigned long int *)(0xa0500000 + i*4)) = fill_color;
   		}
+
 		break;
 	case 1:
 		fill_color = BULGARIA[2];
@@ -164,10 +203,9 @@ void print_flag (int num)
             }
          }
   }
-}
+}*/
 
-
-void print_0808(char * word,int pixel_x,int pixel_y)
+/*void print_0808(char * word,int pixel_x,int pixel_y)
 {
  char bit_long = 8;
  char num_in_line = 1;
@@ -189,7 +227,7 @@ void print_0808(char * word,int pixel_x,int pixel_y)
             }
          }
   }
-}
+}*/
 
 
 void print_0813(char * word,int pixel_x,int pixel_y)
@@ -214,7 +252,7 @@ void print_0813(char * word,int pixel_x,int pixel_y)
             }
          }
   }
-}*/
+}
 
 /* 16*12 
 void print_song2312(char * word,int pixel_x,int pixel_y)

@@ -22,21 +22,19 @@
 #define OSSR		(*(volatile unsigned long *)(0x40a00014))
 
 
-extern void disable_lcd(void);
-extern void enable_lcd(void);
-extern void screen_clean(int);
 extern void print_flag(int);
+extern void print_country(int);
 
 
 int pretimer;
 int autoplay = 0;
 int timer0 = 0;
+int showname = 0;
 //the index of the picture
 int index = 0;
 //the led code of an unit 
 const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
-//the color of the screen
-const unsigned long SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
+
 
 
 void Delay(unsigned int x)
@@ -92,17 +90,16 @@ void lcd_display()
     if (index >= 3)
     {
         index = 0;
-    }
-        
-    //screen_clean(SCREEN_COLOR[index]);
+    } 
     print_flag(index);
+    if (showname == 1)
+    	print_country(index);
 }
 
 void IRQ_Function(void)
 {	
 	char i;
 	char j;
-	unsigned short int kbd_buff;
 	i = KPDK_VALUE;					
 	j = KPAS_VALUE;			
 	
@@ -116,20 +113,17 @@ void IRQ_Function(void)
 			break;
 					
 		case 0x02:  				//key-press 2, enable timer 0		
-            if (OSSR == 0x01)
-            {
-               timer0 = 1;
-            }
+            timer0 = 1;
+            Delay(500);
 			break;
 					
 		case 0x04:  				//key-press 3
-
+			if (showname == 0) showname = 1;
+			else showname = 0;
 			break;
 				
 		case 0x20: 					//key-press 4
-			kbd_buff=0x198F;
-			LED_CS3 = kbd_buff;	
-			LED_CS2 = 0x8F8F;	
+		
 			break;
 					
 		default: break;
@@ -159,9 +153,10 @@ void IRQ_Function(void)
 			}
 			break;
 					
-		case 0x10: 					//key-press 8, restart
+		case 0x10: 					//key-press 8, reset
 			index = 0;
 			lcd_display();
+			RDCR = 0x1e0000;
 			break;
 				
 		default: break;
@@ -182,6 +177,7 @@ void dummyOs(void)
 	index = 0;
 	autoplay = 0;
 	timer0 = 0;
+	showname = 0;
 
  	while(1) 
    	{
@@ -198,8 +194,7 @@ void dummyOs(void)
     		pretimer = OSCR;
     		OSMR0 = pretimer + 0x800000;
 			//Delay(500);
-		}
-		
+		}	
 		//do timer action, show picture
 		if (timer0 == 1) {
 		    index = 1;
