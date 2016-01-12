@@ -22,10 +22,10 @@
 	EXPORT	StackFiq
 	EXPORT	StackAbt
 	EXPORT	StackUnd
-	EXPORT	StackUsr	
+	EXPORT	StackUsr
 	
-	EXPORT  PSSR
-		
+	EXPORT	PSSR
+	
 
 	AREA library_variant ,DATA ,READONLY
 
@@ -51,13 +51,12 @@ pwmEmulatorStatus	EQU	0xa0100024
 ledcode		EQU	0xa0100028
 
 
-
 StackSvc		EQU		0xa0600000
 StackIrq		EQU		0xa0605000
 StackFiq		EQU		0xa060a000
 StackAbt		EQU		0xa060e000
 StackUnd		EQU		0xa0714000
-StackUsr		EQU		0xa0720000	
+StackUsr		EQU		0xa0720000			
 
 ;clock and power Register
 PSSR             EQU       0x40f00004

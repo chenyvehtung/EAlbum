@@ -1,26 +1,36 @@
 #include <stdio.h>
-#include "register_variant.h"
 
-#define LED_CS1   	(*((volatile unsigned short int *)(0x10200000)))    //LED1 and LED2
-#define LED_CS2   	(*((volatile unsigned short int *)(0x10300000)))	//LED3 and LED4
-#define LED_CS3   	(*((volatile unsigned short int *)(0x10400000)))	//LED5 and LED6
+#define LED_CS1   	(*((volatile unsigned short int *)(0x10200000)))
+#define LED_CS2   	(*((volatile unsigned short int *)(0x10300000)))	//LED1 and LED2
+#define LED_CS3   	(*((volatile unsigned short int *)(0x10400000)))	//LED3 and LED4
+
+#define KPDK_VALUE	(*((volatile unsigned char *)(0x41500008)))		//Direct Keypad
+#define KPAS_VALUE	(*((volatile unsigned char *)(0x41500020)))		//Matrix Keypad
+
 
 #define RTSR (*(volatile unsigned long *)(0x40900008))
 #define RCNR (*(volatile unsigned long *)(0x40900000))
 #define RDCR (*(volatile unsigned long *)(0x40900010))
 #define RYCR (*(volatile unsigned long *)(0x40900014))
 
-#define KPDK_VALUE	(*((volatile unsigned char *)(0x41500008)))		//Direct Keypad
-#define KPAS_VALUE	(*((volatile unsigned char *)(0x41500020)))		//Matrix Keypad
+
+void Delay(unsigned int x)
+{
+	unsigned int i, j, k;
+	for (i =0; i <=x; i++)
+		for (j = 0; j <0xff; j++)
+			for (k = 0; k <0xff; k++);
+}
+
 
 //the led code of an unit 
 const unsigned long num_code[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
 
-/* get the led display of a double-digit */
+//get the led display of a double-digit
 unsigned long get_led_display(unsigned long num)
 {
-    int unit = num % 10;
-    int decade = ((int)num / 10) % 10;
+	int unit = num % 10;
+    int decade = (num / 10) % 10;   
     unsigned long answer = num_code[unit];
     answer <<= 8;
     answer += num_code[decade];
@@ -48,25 +58,27 @@ void led_display(int num)
     }
 }
 
-/* for keyboard IRQ interrupt */
 void IRQ_Function(void)
 {	
-    unsigned short int kbd_buff;
 	char i;
 	char j;
+	unsigned short int kbd_buff;
 	i = KPDK_VALUE;					
-	j = KPAS_VALUE;		
-				
-    /* For LED display */
+	j = KPAS_VALUE;					
+
 	switch (i)
-	{			
-		case 0x40:					//key-press 1, display time
-	        led_display(1);         
-			break;				
-		case 0x02:  				//key-press 2, display date
-            led_display(2);         
-			break;				
-		/*case 0x04:  				//key-press 3
+	{
+			
+		case 0x40:					//key-press 1
+	        led_display(2);
+			Delay(500);
+			break;
+					
+		case 0x02:  				//key-press 2		
+			
+			break;
+					
+		case 0x04:  				//key-press 3
 			kbd_buff=0x8F30;
 			LED_CS3 = kbd_buff;	
 			LED_CS2 = 0x8F8F;
@@ -76,12 +88,16 @@ void IRQ_Function(void)
 			kbd_buff=0x198F;
 			LED_CS3 = kbd_buff;	
 			LED_CS2 = 0x8F8F;	
-			break;*/					
-		default: break;		
+			break;
+					
+		default: break;
+			
+		
 	}
-    /* For LCD display */
+
 	switch (j)
-	{			
+	{
+			
 		case 0x00:					//key-press 5
 			kbd_buff=0x8F12;
 			LED_CS2 = kbd_buff;
@@ -106,22 +122,28 @@ void IRQ_Function(void)
 			LED_CS2 = 0x8F8F;
 			break;
 				
-		default: break;		
+		default: break;
+		
 	}
+
 }
 
 
 void dummyOs(void)
-{	
+{
+ 	
 	RTSR = 0x0;				//reset the status registers	
 	RCNR = 0x0;				//reset the clock counter
 	RDCR = 0x1e0000;        //set the time 00:00:00
-	RYCR = 0xfc030;         //set the date 2016.1.13
+	RYCR = 0xfae21;			//set the data 2007.1.1
 	LED_CS1 = LED_CS2 = LED_CS3 = 0xFFFF; //init led
 
-	while (1)
-	{
-        //waiting for interrupt
+ 	while(1) 
+   	{
+   	    led_display(1);
+			//waiting for interrupt
 	}
 	
+
+
 }

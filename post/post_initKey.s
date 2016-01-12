@@ -9,7 +9,7 @@
 	ldr r1,=0x41500000
 	
 	;KPC
-	ldr r0,=0x2920f2C2
+	ldr r0,=0x7FBFF9C3	;0x2FAFF1C2		;≤È—Ø∑Ω Ω    £®0x2FAFF9C3:interrupt£©	
 	str r0,[r1,#0x0]
 	
 	;KPDK

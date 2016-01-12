@@ -22,10 +22,10 @@
    IMPORT  init_BOOT_DEF 
 
 
-   EXPORT post_initMem
+   EXPORT init_Memory
 
 
-   AREA post_initMem, CODE, READONLY
+   AREA init_Memory, CODE, READONLY
  
    ldr r11, =MDCNFG
    ldr r1,  =init_MDCNFG
