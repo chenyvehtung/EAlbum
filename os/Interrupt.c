@@ -28,10 +28,14 @@ void Delay(unsigned int x)
 			for (k = 0; k <0xff; k++);
 }
 
-
+//the index of the picture
+int index = 0;
+//the total number of the picture
+int TOTAL_NUM = 3;
 //the led code of an unit 
 const unsigned long NUM_CODE[10] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
-
+//the color of the screen
+const unsigned long SCREEN_COLOR[3] = {0xF800F800, 0x07E007E0, 0x1F001F};
 
 
 //get the led display of a double-digit
@@ -66,7 +70,16 @@ void led_display(int num)
     }
 }
 
-
+/* show picture according to index */
+void lcd_display()
+{
+    if (index < 0)
+        index = TOTAL_NUM - 1;
+    if (index >= TOTAL_NUM)
+        index = 0;
+        
+    screen_clean(SCREEN_COLOR[index]);
+}
 
 void IRQ_Function(void)
 {	
@@ -109,21 +122,22 @@ void IRQ_Function(void)
 	{
 			
 		case 0x00:					//key-press 5
-			kbd_buff=0x8F78;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F;
+			index--;
+		    lcd_display();
+		    Delay(300);
 			break;
 					
 		case 0x01:  				//key-press 6
-			kbd_buff=0x8F78;
-			LED_CS3 = kbd_buff;
-			LED_CS2 = 0x8F8F; 
+			index++;
+		    lcd_display();
+		    Delay(300);
 			break;
 					
 		case 0x02:  				//key-press 7
 			kbd_buff=0x8F78;
 			LED_CS3 = kbd_buff;
 			LED_CS2 = 0x8F8F;
+			Delay(500);
 			break;
 					
 		case 0x05: 					//key-press 8
@@ -147,6 +161,7 @@ void dummyOs(void)
 	RDCR = 0x1e0000;        //set the time 00:00:00
 	RYCR = 0xfae21;			//set the data 2007.1.1
 	LED_CS1 = LED_CS2 = LED_CS3 = 0xFFFF; //init led
+	index = 0;
 
  	while(1) 
    	{
