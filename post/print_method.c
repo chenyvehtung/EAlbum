@@ -7,6 +7,13 @@
 #define LIGHT2	(1<<13)
 #define BACKLIGHT (1<<8)
 
+//RED,,BLUE, WHITE
+const unsigned long RUSSIA[3] = {0xF800F800, 0x1F001F, 0xFFFFFFFF};
+//WHITE, GREEN,RED,
+const unsigned long BULGARIA[3] = {0xFFFFFFFF, 0x07E007E0, 0xF800F800};
+//RED, WHITE, BLACK
+const unsigned long YEMEN[3] = {0xF800F800, 0xFFFFFFFF, 0x0};
+
 /*extern void udelay(int multi);
 extern char word_1[32][4] ;
 extern char word_2[32][4] ;
@@ -89,6 +96,49 @@ void enable_lcd(void)
 udelay(1);
   LCD_LCCR0 = LCD_LCCR0 | 0x01;
   
+}
+
+
+void print_flag (int num) 
+{
+	long int i = 0x96000/4, fill_color;
+	long int i1 = i / 3;
+	long int i2 = i / 3 * 2;
+	
+	switch(num) {
+	case 0:
+		fill_color = RUSSIA[0];
+		for(;i>0;i--) {
+			if (i > i1 && i <= i2)
+				fill_color = RUSSIA[1];
+			if (i >0 && i <= i1)
+				fill_color = RUSSIA[2];
+  			(*(volatile unsigned long int *)(0xa0500000 + i*4)) = fill_color;
+  		}
+		break;
+	case 1:
+		fill_color = BULGARIA[2];
+		for(;i>0;i--) {
+			if (i > i1 && i <= i2)
+				fill_color = BULGARIA[1];
+			if (i >0 && i <= i1)
+				fill_color = BULGARIA[0];
+  			(*(volatile unsigned long int *)(0xa0500000 + i*4)) = fill_color;
+  		}
+	break;
+	case 2:
+		fill_color = YEMEN[2];
+		for(;i>0;i--) {
+			if (i > i1 && i <= i2)
+				fill_color = YEMEN[1];
+			if (i >0 && i <= i1)
+				fill_color = YEMEN[0];
+  			(*(volatile unsigned long int *)(0xa0500000 + i*4)) = fill_color;
+  		}
+	break;
+	default:
+	break;
+	}
 }
 
 

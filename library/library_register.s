@@ -98,7 +98,10 @@
 
          EXPORT  backlight_cs
          EXPORT  lcdlight 
-	
+
+    ;For timer
+	EXPORT	OSSR
+	EXPORT	KPC		
 	
 
 	AREA library_register ,DATA ,READONLY
@@ -166,7 +169,7 @@ osStack			EQU	0xa0200000
 
 ;Interrupt Controller
 ICMR             EQU       0x40d00004
-init_ICMR        EQU       0x00000010
+init_ICMR        EQU       0x3c400010 ;0x00000010
 
 
 ;GPIO configuration
@@ -216,6 +219,13 @@ init_FDADR0       EQU      0xa0300000
 
 backlight_cs      EQU      0x08000000
 lcdlight          EQU      0x80
+
+
+;***************************
+;TIMER
+;***************************
+OSSR			EQU		0x40a00014
+KPC				EQU		0x41500000
 
 
 	END

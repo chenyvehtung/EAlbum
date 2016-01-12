@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include "register_variant.h"
+
 
 #define LED_CS1   	(*((volatile unsigned short int *)(0x10200000)))
 #define LED_CS2   	(*((volatile unsigned short int *)(0x10300000)))	//LED1 and LED2
@@ -14,13 +16,21 @@
 #define RYCR (*(volatile unsigned long *)(0x40900014))
 
 
+#define OIER		(*(volatile unsigned long *)(0x40a0001c))
+#define	OSCR		(*(volatile unsigned long *)(osTimer_OSCR))
+#define	OSMR0		(*(volatile unsigned long *)(0x40a00000))
+#define OSSR		(*(volatile unsigned long *)(0x40a00014))
+
+
 extern void disable_lcd(void);
 extern void enable_lcd(void);
 extern void screen_clean(int);
+extern void print_flag(int);
 
 
-
+int pretimer;
 int autoplay = 0;
+int timer0 = 0;
 //the index of the picture
 int index = 0;
 //the led code of an unit 
@@ -84,7 +94,8 @@ void lcd_display()
         index = 0;
     }
         
-    screen_clean(SCREEN_COLOR[index]);
+    //screen_clean(SCREEN_COLOR[index]);
+    print_flag(index);
 }
 
 void IRQ_Function(void)
@@ -93,8 +104,9 @@ void IRQ_Function(void)
 	char j;
 	unsigned short int kbd_buff;
 	i = KPDK_VALUE;					
-	j = KPAS_VALUE;					
-
+	j = KPAS_VALUE;			
+	
+	
 	switch (i)
 	{
 			
@@ -103,8 +115,11 @@ void IRQ_Function(void)
 			Delay(500);
 			break;
 					
-		case 0x02:  				//key-press 2		
-
+		case 0x02:  				//key-press 2, enable timer 0		
+            if (OSSR == 0x01)
+            {
+               timer0 = 1;
+            }
 			break;
 					
 		case 0x04:  				//key-press 3
@@ -128,13 +143,11 @@ void IRQ_Function(void)
 		case 0x00:					//key-press 5, previous page
 			index--;
 		    lcd_display();
-		    //Delay(300);
 			break;
 					
 		case 0x01:  				//key-press 6, next page
 			index++;
 		    lcd_display();
-		    //Delay(300);
 			break;
 					
 		case 0x02:  				//key-press 7, autoplay start and stop
@@ -168,6 +181,7 @@ void dummyOs(void)
 	LED_CS1 = LED_CS2 = LED_CS3 = 0xFFFF; //init led
 	index = 0;
 	autoplay = 0;
+	timer0 = 0;
 
  	while(1) 
    	{
@@ -178,6 +192,19 @@ void dummyOs(void)
 		    led_display(1);
 		    Delay(500);
 		    index++;
+		}
+		if (KPDK_VALUE == 0x02) { //keypress 2, starttimer
+		    OIER = 0x1;		
+    		pretimer = OSCR;
+    		OSMR0 = pretimer + 0x800000;
+			//Delay(500);
+		}
+		
+		//do timer action, show picture
+		if (timer0 == 1) {
+		    index = 1;
+		    lcd_display();
+		    timer0 = 0;
 		}
 	}
 	
