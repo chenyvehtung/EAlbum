@@ -1,6 +1,6 @@
 # EAlbum
-An Electronic Album running on PXA270
-SYSU 2015 EMBEDED SYSTEMS FINAL PROJECT
+An Electronic Album running on PXA270      
+SYSU 2015 EMBEDED SYSTEMS FINAL PROJECT   
 
 ## 相关文档
 所有相关的文档都包含在Manuals文件夹中，主要有
